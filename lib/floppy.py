@@ -6,11 +6,15 @@ import time
 
 class Floppy:
 
+    AXIS_POS_LIMIT = (0, 5, 5)
+    AXIS_NEG_LIMIT = (-7.5, 0, -5)
+
     def __init__(self):
 
         # region Attributes
         self._speed = 20
         self._buffer = 0
+        self._pos_tracker = [0.0, 0.0, 0.0]
         # endregion
 
         self.error_led = Pin(21, Pin.OUT)
@@ -87,8 +91,17 @@ class Floppy:
 
             if relative:
                 cmd += "G91"
+                new_pos = [sum(x) for x in zip(joints, self._pos_tracker)]
             else:
                 cmd += "G90"
+                new_pos = joints
+
+            if not jog:
+                for pos, neg_limit, pos_limit in zip(new_pos, self.AXIS_NEG_LIMIT, self.AXIS_POS_LIMIT):
+                    if pos > pos_limit or pos < neg_limit:
+                        self.error_led(1)
+                        raise ValueError("Trying to move outside limits.")
+                self._pos_tracker = new_pos
 
             for axis, joint in zip(("X", "Y", "Z"), joints):
                 if joint is not None:
