@@ -73,7 +73,7 @@ class Floppy:
 
         return tuple(data)
 
-    def move_to(self, joints: tuple, relative=False, jog=False) -> None:
+    def move_to(self, joint: tuple, relative=False, jog=False) -> None:
 
         # 10 per revolution.
 
@@ -91,19 +91,23 @@ class Floppy:
 
             if relative:
                 cmd += "G91"
-                new_pos = [sum(x) for x in zip(joints, self._pos_tracker)]
+                new_pos = list()
+                for j, n in zip(joint, self._pos_tracker):
+                    if j is not None:
+                        new_pos.append(sum((j, n)))
             else:
                 cmd += "G90"
-                new_pos = joints
+                new_pos = joint
 
             if not jog:
                 for pos, neg_limit, pos_limit in zip(new_pos, self.AXIS_NEG_LIMIT, self.AXIS_POS_LIMIT):
-                    if pos > pos_limit or pos < neg_limit:
-                        self.error_led(1)
-                        raise ValueError("Trying to move outside limits.")
+                    if pos is not None:
+                        if pos > pos_limit or pos < neg_limit:
+                            self.error_led(1)
+                            raise ValueError("Trying to move outside limits.")
                 self._pos_tracker = new_pos
 
-            for axis, joint in zip(("X", "Y", "Z"), joints):
+            for axis, joint in zip(("X", "Y", "Z"), joint):
                 if joint is not None:
                     cmd += axis + str(joint)
 

@@ -6,6 +6,16 @@ l2 = 187.5
 OFFSET = (3.833, -2.5, 0.0)  # Safe position
 
 
+def linear_move(joint: tuple, point: tuple) -> tuple:
+
+    """Take a joint and applies a cartesian relative-move"""
+
+    c_joint = forward_kinematics(*joint)
+    pos = inverse_kinematics(c_joint[0] + point[0], c_joint[1] + point[1])
+
+    return pos[0], pos[1], joint[2]
+
+
 def inverse_kinematics(x: float, y: float) -> tuple:
 
     """Computes the inverse kinematics for a planar 2DOF arm"""

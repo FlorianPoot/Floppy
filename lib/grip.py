@@ -15,7 +15,7 @@ class Grip:
     def open(self) -> None:
 
         self.servo.duty(self.open_value)
-        time.sleep(1)
+        time.sleep(0.5)
 
     def close(self, value=None) -> None:
 
@@ -28,7 +28,7 @@ class Grip:
             else:
                 raise ValueError("Value must be greater than 0 and less or equal than 100.")
 
-        time.sleep(1)
+        time.sleep(0.5)
 
     @staticmethod
     def map_value(x: float, in_min: float, in_max: float, out_min: float, out_max: float) -> float:

@@ -12,11 +12,11 @@ while not _exit:
 
         # Ex: JOG(2, 2, 2)  X, Y, Z
         if "JOG(" == data[:4]:
-            values = [int(x) for x in data.split("(")[1].split(")")[0].split(", ")]
+            values = [float(x) for x in data.split("(")[1].split(")")[0].split(", ")]
 
             floppy.move_to(values, relative=True, jog=True)
         elif "JOG_CART(" == data[:9]:
-            values = [int(x) for x in data.split("(")[1].split(")")[0].split(", ")]
+            values = [float(x) for x in data.split("(")[1].split(")")[0].split(", ")]
             pos = forward_kinematics(*floppy.get_position())
 
             floppy.move_to(inverse_kinematics(float(values[0]) + pos[0], float(values[1]) + pos[1]), relative=False, jog=True)
